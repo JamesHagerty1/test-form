@@ -1,17 +1,21 @@
-import React from 'react';
+import {useState} from 'react';
 import { Formik, Form, Field, ErrorMessage } from 'formik';
 
 
 function App() {
+  const [doHypothesisTest, setDoHypothesisTest] = useState(false);
+
+  const handleSubmit = (values: any, { setSubmitting }: any) => {
+    console.log(values.sampleSize);
+    setSubmitting(false);
+  };
+
   return (
     <div>
-      hello
       <Formik
         initialValues={{ sampleSize: '' }}
         validate={values => {
           const errors: any = {};
-
-          console.log(values.sampleSize);
 
           if (
             !Number.isInteger(values.sampleSize) ||
@@ -22,35 +26,52 @@ function App() {
 
           return errors;
         }}
-        onSubmit={(values, { setSubmitting }) => {
-          console.log('clicked me');
-          setTimeout(() => {
-            alert(JSON.stringify(values, null, 2));
-            setSubmitting(false);
-          }, 400);
-        }}
+        onSubmit={handleSubmit}
       >
       {({ isSubmitting }) => (
         <Form>
-          <Field 
-            type='number' 
-            name='sampleSize' 
-          />
-          <ErrorMessage 
+          <div>
+            <label htmlFor='sampleSize'>Sample size:</label>
+            <Field
+              className='border border-gray-400 rounded-sm' 
+              type='number' 
+              name='sampleSize' 
+            />
+          </div>
+          <ErrorMessage
+            className='text-red-600' 
             name='sampleSize' 
             component='div' 
           />
           
+          <div>
+            <input
+              type='checkbox'
+              id='enableFields'
+              checked={doHypothesisTest}
+              onChange={(e) => setDoHypothesisTest(e.target.checked)}
+            />
+            <label htmlFor='enableFields'>Perform hypothesis test</label>
+          </div>
+
           <button
-            className='bg-blue-300'
+            className='w-24 bg-blue-500 text-white border border-blue-500'
             type='submit' 
             disabled={isSubmitting}
           >
             OK
           </button>
+          <button
+            className='w-24 border border-gray-300'
+          >
+            Reset
+          </button>
         </Form>
        )}
      </Formik>
+     {
+
+     }
     </div>
   );
 }
