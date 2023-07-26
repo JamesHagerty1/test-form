@@ -89,55 +89,58 @@ function App() {
         }}
         onSubmit={handleSubmit}
       >
-      {({ isSubmitting }) => (
-        <Form>
-          <FormItem 
-            name={'sampleSize'}
-            labelText={'Sample size:'} 
-            disabled={false}
-          />
-          
-          <FormItem 
-            name={'sampleMean'}
-            labelText={'Sample mean:'} 
-            disabled={false}
-          />
+        {({ isSubmitting }) => (
+          <Form>
+            <FormItem 
+              name={'sampleSize'}
+              labelText={'Sample size:'} 
+              disabled={false}
+            />
+            
+            <FormItem 
+              name={'sampleMean'}
+              labelText={'Sample mean:'} 
+              disabled={false}
+            />
 
-          <FormItem 
-            name={'standardDeviation'}
-            labelText={'Standard deviation:'} 
-            disabled={false}
-          />
+            <FormItem 
+              name={'standardDeviation'}
+              labelText={'Standard deviation:'} 
+              disabled={false}
+            />
 
-          <input                       // modularize this one too for generalization
-            type='checkbox'
-            checked={doHypothesisTest}
-            onChange={(e) => setDoHypothesisTest(e.target.checked)}
-          />
-          <label>Perform hypothesis test</label>
-          <FormItem
-            name={'hypothesizedMean'}
-            labelText={'Hypothesized mean:'}
-            disabled={!doHypothesisTest}
-          />
+            <input                       // modularize this one too for generalization
+              type='checkbox'
+              checked={doHypothesisTest}
+              onChange={(e) => {
+                setTableVals({});
+                setDoHypothesisTest(e.target.checked)
+              }}
+            />
+            <label>Perform hypothesis test</label>
+            <FormItem
+              name={'hypothesizedMean'}
+              labelText={'Hypothesized mean:'}
+              disabled={!doHypothesisTest}
+            />
 
-          <br></br>
-          <button
-            className='w-24 bg-blue-500 text-white border border-blue-500'
-            type='submit' 
-            disabled={isSubmitting}
-          >
-            OK
-          </button>
-          <button
-            className='w-24 border border-gray-300'
-            type='reset'
-            onClick={ () => { setTableVals({}) } }
-          >
-            Reset
-          </button>
-        </Form>
-      )}
+            <br></br>
+            <button
+              className='w-24 bg-blue-500 text-white border border-blue-500'
+              type='submit' 
+              disabled={isSubmitting}
+            >
+              OK
+            </button>
+            <button
+              className='w-24 border border-gray-300'
+              type='reset'
+              onClick={ () => { setTableVals({}) } }
+            >
+              Reset
+            </button>
+          </Form>
+        )}
       </Formik>
       {(Object.keys(tableVals).length > 0) && (
         <table>
