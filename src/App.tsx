@@ -13,7 +13,7 @@ function App() {
   return (
     <div>
       <Formik
-        initialValues={{ sampleSize: '' }}
+        initialValues={{ sampleSize: '', hypothesizedMean: '' }}
         validate={values => {
           const errors: any = {};
 
@@ -44,16 +44,28 @@ function App() {
             component='div' 
           />
           
+          <input                       
+            type='checkbox'
+            checked={doHypothesisTest}
+            onChange={(e) => setDoHypothesisTest(e.target.checked)}
+          />
+          <label>Perform hypothesis test</label>
           <div>
-            <input
-              type='checkbox'
-              id='enableFields'
-              checked={doHypothesisTest}
-              onChange={(e) => setDoHypothesisTest(e.target.checked)}
+            <label htmlFor='hypothesizedMean'>Hypothesized mean:</label>
+            <Field
+              className='border border-gray-400 rounded-sm' 
+              type='number' 
+              name='hypothesizedMean' 
+              disabled={!doHypothesisTest}
             />
-            <label htmlFor='enableFields'>Perform hypothesis test</label>
           </div>
+          <ErrorMessage
+            className='text-red-600' 
+            name='hypothesizedMean' 
+            component='div' 
+          />
 
+          <br></br>
           <button
             className='w-24 bg-blue-500 text-white border border-blue-500'
             type='submit' 
@@ -63,6 +75,7 @@ function App() {
           </button>
           <button
             className='w-24 border border-gray-300'
+            type='reset'
           >
             Reset
           </button>
