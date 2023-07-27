@@ -131,7 +131,7 @@ const TemplateForm = ({ ...props }: any) => {
         props.setTable(
           Object.entries(values).reduce((d: any, [k, v]) => {
             if (enabled[k]) {
-              d[k] = v; // field name : entered number
+              d[k] = v as string; // field name : entered value
             }
             return d;
           }, {})
@@ -184,7 +184,7 @@ const Table = ({ ...props }: any) => {
                 {title as string}
               </td>
               <td className='border border-black w-48 p-1' >
-                {val as number}
+                {val as string}
               </td>
             </tr>
           )}
@@ -196,8 +196,8 @@ const Table = ({ ...props }: any) => {
 
 
 function App() {
-  // field name : entered number
-  const [table, setTable] = useState<{[key: string]: number}>({});
+  // field name : entered value
+  const [table, setTable] = useState<{[key: string]: string}>({});
 
   return (
     <div className='flex flex-col items-center' >
