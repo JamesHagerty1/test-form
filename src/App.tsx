@@ -6,6 +6,11 @@ import classnames from 'classnames';
 
 function App() {
   // document me!
+  /*
+  {
+    
+  }
+  */
   const formTemplate = [
     {
       label: 'Sample size',
