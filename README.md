@@ -1,4 +1,4 @@
-### Setup:
+### Local Setup / Viewing:
 #### 1. [Optional] check if your node and react versions match / are compatible:
 ```bash
 $ npm -v
