@@ -7,243 +7,139 @@ function App() {
   // document me!
   const formTemplate = [
     {
-      id: 'sampleSize',
-      label: 'Sample size:',
+      label: 'Sample size',
+      type: 'number', // Formik type
       validation: number().required().integer().min(2),
     },
     {
-      id: 'hypothesizedMean',
-      toggleHeader: 'Perform hypothesis test',
-      label: 'Hypothesized mean:',
+      label: 'Sample mean',
+      type: 'number',
+      validation: number().required(),
+    },
+    {
+      label: 'Standard deviation',
+      type: 'number',
+      validation: number().required().min(0),
+    },
+    {
+      label: 'Hypothesized mean',
+      type: 'number',
       validation: number().required(), 
+      toggleHeader: 'Perform hypothesis test',
     },
   ];
 
-  const NumInput = ({ ...props }: any) => {
+  const [table, setTable] = useState({});
 
-    console.log('props:');
-    console.log(props);
+  const [validations, setValidations] = useState(
+    formTemplate.reduce((d: any, item: any) => {
+      if (!('toggleHeader' in item)) {
+        d[item.label] = item.validation;
+      }
+      return d;
+    }, {})
+  );
+
+  const [enabled, setEnabled] = useState(
+    formTemplate.reduce((d: any, item: any) => {
+      d[item.label] = !('toggleHeader' in item);
+      return d;
+    }, {})
+  )
+
+  const FieldBundle = ({ ...props }: any) => {
+
+    const toggleField = (e: any) => {
+      let curValidations = { ...validations }
+
+      if (props.label in validations) {
+        delete curValidations[props.label];
+      } else {
+        curValidations[props.label] = props.validation;
+      }
+
+      setValidations(curValidations);
+      setEnabled((enabled: any) => (
+        {...enabled, [props.label]: e.target.checked}
+      ));
+    }
 
     return (
       <div>
-        <label 
-          htmlFor={props.id}
-        >
-          {props.label}
-        </label>
-        <Field
-          type='number'
-          name={props.id}
-          disabled={false}
-        />
+        {props.toggleHeader &&
+          <div>
+            <input
+              type='checkbox'
+              checked={enabled[props.label]}
+              onChange={(e) => { toggleField(e) }}
+            />
+            {props.toggleHeader}
+          </div>
+        }
+        <div>
+          <label>{`${props.label}:`}</label>
+          <Field
+            type={props.type}
+            name={props.label}
+            disabled={!enabled[props.label]}
+          />
+        </div>
         <ErrorMessage
+          name={props.label}
+          component='div'
           className='text-red-600'
-          name={props.id}
         />
       </div>
     );
   };
 
-  // track what's toggled by id ?
-  // ?? re-create validation schema based on toggles ... maybe not if "disabled" negates it
-
   return (
     <>
-      <h1>Hello</h1>
       <Formik
         initialValues={
           formTemplate.reduce((vals: any, item: any) => {
-            vals[item.id] = 22;
+            vals[item.label] = '';
             return vals;
           }, {})
         }
-        validationSchema={
-          object(
-            formTemplate.reduce((vals: any, item: any) => {
-              vals[item.id] = item.validation;
-              return vals;
-            }, {})
-          )
-        }
+        validationSchema={object(validations)}
         onSubmit={(values: any, { setSubmitting }: any) => {
-          console.log(values);
-          setSubmitting(false)
+          setTable(
+            Object.entries(values).reduce((d: any, [k, v]) => {
+              if (v) {
+                d[k] = v;
+              }
+              return d;
+            }, {})
+          );
+          setSubmitting(false);
         }}
       >
         <Form>
           {formTemplate.map((item) =>
-            <NumInput
-              id={item.id}
+            <FieldBundle
+              toggleHeader={('toggleHeader' in item) ? item.toggleHeader : null}
               label={item.label}
-              key={item.id}
+              type={item.type}
+              validation={item.validation}
             />
           )}
+          <button type='submit'>OK</button>
+          <button type='reset'>Reset</button>
         </Form>
       </Formik>
+      <table>
+        <tbody>
+          {Object.entries(table).map(([title, val]) => 
+            <tr>
+              <td>{title as string}</td>
+              <td>{val as string}</td>
+            </tr>
+          )}
+        </tbody>
+      </table>
     </>
   );
 }
-
-
-
-
-// type TableVals = { [key: string]: number };
-
-// function App() {
-//   const [tableVals, setTableVals] = useState<TableVals>({});
-//   const [doHypothesisTest, setDoHypothesisTest] = useState(false);
-
-//   const handleSubmit = (values: any, { setSubmitting }: any) => {
-//     const table: TableVals = {};
-    
-//     table['sample size'] = values.sampleSize;
-//     table['sample mean'] = values.sampleMean;
-//     table['standard deviation'] = values.standardDeviation;
-
-//     if (doHypothesisTest) {
-//       table['hypothesized mean'] = values.hypothesizedMean;
-//     }
-
-//     setTableVals(table);
-//     setSubmitting(false);
-//   };
-
-//   interface FormItemProps {
-//     name: string;
-//     labelText: string;
-//     disabled: boolean;
-//   }
-
-//   const FormItem: React.FC<FormItemProps> = ({ name, labelText, disabled }) => {
-//     return (
-//       <div>
-//         <div>
-//           <label htmlFor={name}>{labelText}</label>
-//           <Field
-//             className='border border-gray-400 rounded-sm' 
-//             type='number'
-//             name={name}
-//             disabled={disabled}
-//           />
-//         </div>
-//         <ErrorMessage
-//           className='text-red-600' 
-//           name={name}
-//           component='div' 
-//         />
-//       </div>
-//     );
-//   };
-
-//   return (
-//     <div>
-//       <Formik
-//         initialValues={{
-//           sampleSize: '',
-//           sampleMean: '',
-//           standardDeviation: '', 
-//           hypothesizedMean: '' 
-//         }}
-//         validate={values => {
-//           setTableVals({});
-
-//           const errors: any = {};
-
-//           if (
-//             !Number.isInteger(values.sampleSize) ||
-//             parseInt(values.sampleSize) < 2
-//           ) {
-//             errors.sampleSize = 'Need a whole number >= 2';
-//           }
-
-//           if (values.sampleMean === '') {
-//             errors.sampleMean = 'Need a numeric value';
-//           }
-
-//           if (
-//             values.standardDeviation === '' || 
-//             parseFloat(values.standardDeviation) <= 0
-//           ) {
-//             errors.standardDeviation = 'Need a numeric value > 0';
-//           }
-
-//           if (doHypothesisTest && values.hypothesizedMean === '') {
-//             errors.hypothesizedMean = 'Need a numeric value';
-//           }
-
-//           return errors;
-//         }}
-//         onSubmit={handleSubmit}
-//       >
-//         {({ isSubmitting }) => (
-//           <Form>
-//             <FormItem 
-//               name={'sampleSize'}
-//               labelText={'Sample size:'} 
-//               disabled={false}
-//             />
-            
-//             <FormItem 
-//               name={'sampleMean'}
-//               labelText={'Sample mean:'} 
-//               disabled={false}
-//             />
-
-//             <FormItem 
-//               name={'standardDeviation'}
-//               labelText={'Standard deviation:'} 
-//               disabled={false}
-//             />
-
-//             <input                       // modularize this one too for generalization
-//               type='checkbox'
-//               checked={doHypothesisTest}
-//               onChange={(e) => {
-//                 setTableVals({});
-//                 setDoHypothesisTest(e.target.checked)
-//               }}
-//             />
-//             <label>Perform hypothesis test</label>
-//             <FormItem
-//               name={'hypothesizedMean'}
-//               labelText={'Hypothesized mean:'}
-//               disabled={!doHypothesisTest}
-//             />
-
-//             <br></br>
-//             <button
-//               className='w-24 bg-blue-500 text-white border border-blue-500'
-//               type='submit' 
-//               disabled={isSubmitting}
-//             >
-//               OK
-//             </button>
-//             <button
-//               className='w-24 border border-gray-300'
-//               type='reset'
-//               onClick={ () => { setTableVals({}) } }
-//             >
-//               Reset
-//             </button>
-//           </Form>
-//         )}
-//       </Formik>
-//       {(Object.keys(tableVals).length > 0) && (
-//         <table>
-//           <tbody>
-//             {Object.keys(tableVals).map((title: string) =>
-//               <tr
-//                 key={title}
-//               >
-//                 <td>{title}</td>
-//                 <td>{tableVals[title]}</td>
-//               </tr>
-//             )}
-//           </tbody>
-//         </table>
-//       )}
-//     </div>
-//   );
-// }
 
 export default App;
