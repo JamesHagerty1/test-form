@@ -1,6 +1,7 @@
-import React, {useState} from 'react';
+import {useState} from 'react';
 import { Formik, Form, Field, ErrorMessage } from 'formik';
 import { number, object } from 'yup';
+import classnames from 'classnames';
 
 
 function App() {
@@ -65,23 +66,35 @@ function App() {
     }
 
     return (
-      <div>
+      <div
+        className='my-2'
+      >
         {props.toggleHeader &&
           <div>
             <input
               type='checkbox'
               checked={enabled[props.label]}
               onChange={(e) => { toggleField(e) }}
+              className='mr-2'
             />
             {props.toggleHeader}
           </div>
         }
-        <div>
-          <label>{`${props.label}:`}</label>
+        <div
+          className=''
+        >
+          <label className={(!enabled[props.label]) ? 'text-gray-300' : ''}>
+            {`${props.label}:`}
+          </label>
           <Field
             type={props.type}
             name={props.label}
             disabled={!enabled[props.label]}
+            className={
+              classnames('float-right w-7/12 border pl-1 h-9 rounded-md', {
+                'bg-neutral-100 border-neutral-200': !enabled[props.label]
+              })
+            }
           />
         </div>
         <ErrorMessage
@@ -106,7 +119,7 @@ function App() {
         onSubmit={(values: any, { setSubmitting }: any) => {
           setTable(
             Object.entries(values).reduce((d: any, [k, v]) => {
-              if (v) {
+              if (enabled[k]) {
                 d[k] = v;
               }
               return d;
@@ -115,17 +128,25 @@ function App() {
           setSubmitting(false);
         }}
       >
-        <Form>
-          {formTemplate.map((item) =>
-            <FieldBundle
-              toggleHeader={('toggleHeader' in item) ? item.toggleHeader : null}
-              label={item.label}
-              type={item.type}
-              validation={item.validation}
-            />
-          )}
-          <button type='submit'>OK</button>
-          <button type='reset'>Reset</button>
+        <Form
+          className='max-w-2xl bg-zinc-50 p-3'
+        >
+          <div className='flex flex-col' >
+            {formTemplate.map((item) =>
+              <FieldBundle
+                toggleHeader={
+                  ('toggleHeader' in item) ? item.toggleHeader : null
+                }
+                label={item.label}
+                type={item.type}
+                validation={item.validation}
+              />
+            )}
+            <div>
+              <button type='submit' className='float-right'>OK</button>
+              <button type='reset' className='float-right'>Reset</button>
+            </div>
+          </div>
         </Form>
       </Formik>
       <table>
