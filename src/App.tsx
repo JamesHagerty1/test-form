@@ -31,7 +31,7 @@ const TemplateForm = ({ ...props }: any) => {
     {
       label: 'Standard deviation',
       type: 'number',
-      validation: number().required().min(0),
+      validation: number().required().moreThan(0),
     },
     {
       label: 'Hypothesized mean',
