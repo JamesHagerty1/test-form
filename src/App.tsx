@@ -5,16 +5,20 @@ import classnames from 'classnames';
 
 
 function App() {
-  // document me!
-  /*
-  {
-
-  }
-  */
+  /**
+   * Can update the form just by editing formTemplate items!
+   * See Formik docs for 'type:' and Yup docs for 'validation:'
+   * {
+   *   label:            <string label for your field>
+   *   type:             <string Formik Field type>
+   *   validation:       <Yup function (should correspond to above)>
+   *   toggleHeader:     <[OPTIONAL] string label for a togglable field>
+   * }
+   */
   const formTemplate = [
     {
       label: 'Sample size',
-      type: 'number', // Formik type
+      type: 'number',
       validation: number().required().integer().min(2),
     },
     {
@@ -35,8 +39,7 @@ function App() {
     },
   ];
 
-  const [table, setTable] = useState({});
-
+  // Can add and remove togglable fields among those validated
   const [validations, setValidations] = useState(
     formTemplate.reduce((d: any, item: any) => {
       if (!('toggleHeader' in item)) {
@@ -46,6 +49,7 @@ function App() {
     }, {})
   );
 
+  // Togglable fields can change enabled-status, other fields always enabled
   const [enabled, setEnabled] = useState(
     formTemplate.reduce((d: any, item: any) => {
       d[item.label] = !('toggleHeader' in item);
@@ -53,8 +57,12 @@ function App() {
     }, {})
   )
 
+  const [table, setTable] = useState<{[key: string]: number}>({});
+
+  // Contains a field, its error message, and optional togglability
   const FieldBundle = ({ ...props }: any) => {
 
+    // Enable or disable a field and its validation
     const toggleField = (e: any) => {
       let curValidations = { ...validations }
 
@@ -71,9 +79,7 @@ function App() {
     }
 
     return (
-      <div
-        className='my-2'
-      >
+      <div className='my-2' >
         {props.toggleHeader &&
           <div>
             <input
@@ -102,8 +108,8 @@ function App() {
             name={props.label}
             disabled={!enabled[props.label]}
             className={
-              classnames('float-right w-7/12 border pl-1 h-9 rounded-md', {
-                'bg-neutral-100 border-neutral-200': (!enabled[props.label]),
+              classnames('w-7/12 h-9 pl-1 border rounded-md float-right', {
+                'border-neutral-200 bg-neutral-100': (!enabled[props.label]),
               })
             }
           />
@@ -121,13 +127,14 @@ function App() {
     <div className='flex flex-col items-center' >
       <Formik
         initialValues={
-          formTemplate.reduce((vals: any, item: any) => {
-            vals[item.label] = '';
-            return vals;
+          formTemplate.reduce((d: any, item: any) => {
+            d[item.label] = '';
+            return d;
           }, {})
         }
         validationSchema={object(validations)}
         onSubmit={(values: any, { setSubmitting }: any) => {
+          // table excludes disabled form values
           setTable(
             Object.entries(values).reduce((d: any, [k, v]) => {
               if (enabled[k]) {
@@ -140,7 +147,7 @@ function App() {
         }}
       >
         <Form
-          className='w-full md:w-2/3 lg:w-1/2 bg-zinc-50 p-3 m-6'
+          className='w-full md:w-2/3 lg:w-1/2 m-6 p-3 bg-zinc-50'
         >
           <div className='flex flex-col' >
             {formTemplate.map((item) =>
@@ -178,8 +185,12 @@ function App() {
           <tbody>
             {Object.entries(table).map(([title, val]) => 
               <tr>
-                <td className='border border-black w-48 font-bold p-1' >{title as string}</td>
-                <td className='border border-black w-48 p-1' >{val as string}</td>
+                <td className='border border-black w-48 font-bold p-1' >
+                  {title}
+                </td>
+                <td className='border border-black w-48 p-1' >
+                  {val}
+                </td>
               </tr>
             )}
           </tbody>
