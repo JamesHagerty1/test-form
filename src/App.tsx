@@ -9,7 +9,7 @@ const TemplateForm = ({ ...props }: any) => {
   /**
    * Can update the form just by editing formTemplate items!
    * See Formik docs for 'type:' and Yup docs for 'validation:'
-   * (give a field a 'toggleHeader' to make it toggleable)
+   * (give a field a 'toggleHeader:' to make it toggleable)
    * {
    *   label:            <string label for your field>
    *   type:             <string Formik Field type>
@@ -53,7 +53,7 @@ const TemplateForm = ({ ...props }: any) => {
     }, {})
   );
 
-  // Togglable fields can change enabled-status, other fields always enabled
+  // Togglable fields disabled at first, other fields always enabled
   const [enabled, setEnabled] = useState(
     formTemplate.reduce((d: any, item: any) => {
       d[item.label] = !('toggleHeader' in item);
@@ -61,7 +61,7 @@ const TemplateForm = ({ ...props }: any) => {
     }, {})
   )
 
-  // Contains a field, its error message, and optional togglability
+  // Contains a field, its error message, and togglability
   const FieldBundle = ({ ...props }: any) => {
 
     // Enable or disable a field and its validation
@@ -93,16 +93,8 @@ const TemplateForm = ({ ...props }: any) => {
             {props.toggleHeader}
           </div>
         }
-        <div
-          className=''
-        >
-          <label 
-            className={
-              classnames('', {
-                'text-gray-300': (!enabled[props.label]),
-              })
-            }
-          >
+        <div>
+          <label className={(!enabled[props.label]) ? 'text-gray-300' : ''} >
             {`${props.label}:`}
           </label>
           <Field
@@ -139,7 +131,7 @@ const TemplateForm = ({ ...props }: any) => {
         props.setTable(
           Object.entries(values).reduce((d: any, [k, v]) => {
             if (enabled[k]) {
-              d[k] = v;
+              d[k] = v; // field name : entered number
             }
             return d;
           }, {})
@@ -151,9 +143,7 @@ const TemplateForm = ({ ...props }: any) => {
         <div className='flex flex-col' >
           {formTemplate.map((item) =>
             <FieldBundle
-              toggleHeader={
-                ('toggleHeader' in item) ? item.toggleHeader : null
-              }
+              toggleHeader={('toggleHeader' in item) ? item.toggleHeader : null}
               label={item.label}
               type={item.type}
               validation={item.validation}
@@ -206,7 +196,7 @@ const Table = ({ ...props }: any) => {
 
 
 function App() {
-
+  // field name : entered number
   const [table, setTable] = useState<{[key: string]: number}>({});
 
   return (
