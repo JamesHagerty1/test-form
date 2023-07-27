@@ -1,6 +1,7 @@
+import React from 'react';
 import {useState} from 'react';
 import { Formik, Form, Field, ErrorMessage } from 'formik';
-import { number, object } from 'yup';
+import { number, object, mixed } from 'yup';
 import classnames from 'classnames';
 
 
@@ -42,8 +43,10 @@ const TemplateForm = ({ ...props }: any) => {
   // Can add and remove togglable fields among those validated
   const [validations, setValidations] = useState(
     formTemplate.reduce((d: any, item: any) => {
-      if (!('toggleHeader' in item)) {
-        d[item.label] = item.validation;
+      if ('toggleHeader' in item) {
+        d[item.label] = mixed(); // disabled validation
+      } else {
+        d[item.label] = item.validation; // non-togglable field always validated
       }
       return d;
     }, {})
@@ -64,10 +67,10 @@ const TemplateForm = ({ ...props }: any) => {
     const toggleField = (e: any) => {
       let curValidations = { ...validations }
 
-      if (props.label in validations) {
-        delete curValidations[props.label];
-      } else {
+      if (e.target.checked) { // enable field and its validation
         curValidations[props.label] = props.validation;
+      } else {
+        curValidations[props.label] = mixed(); // disabled validation
       }
 
       setValidations(curValidations);
