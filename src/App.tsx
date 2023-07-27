@@ -4,7 +4,7 @@ import { number, object } from 'yup';
 import classnames from 'classnames';
 
 
-function App() {
+const TemplateForm = ({ ...props }: any) => {
   /**
    * Can update the form just by editing formTemplate items!
    * See Formik docs for 'type:' and Yup docs for 'validation:'
@@ -56,8 +56,6 @@ function App() {
       return d;
     }, {})
   )
-
-  const [table, setTable] = useState<{[key: string]: number}>({});
 
   // Contains a field, its error message, and optional togglability
   const FieldBundle = ({ ...props }: any) => {
@@ -124,78 +122,93 @@ function App() {
   };
 
   return (
-    <div className='flex flex-col items-center' >
-      <Formik
-        initialValues={
-          formTemplate.reduce((d: any, item: any) => {
-            d[item.label] = '';
+    <Formik
+      initialValues={
+        formTemplate.reduce((d: any, item: any) => {
+          d[item.label] = '';
+          return d;
+        }, {})
+      }
+      validationSchema={object(validations)}
+      onSubmit={(values: any, { setSubmitting }: any) => {
+        // table excludes disabled form values
+        props.setTable(
+          Object.entries(values).reduce((d: any, [k, v]) => {
+            if (enabled[k]) {
+              d[k] = v;
+            }
             return d;
           }, {})
-        }
-        validationSchema={object(validations)}
-        onSubmit={(values: any, { setSubmitting }: any) => {
-          // table excludes disabled form values
-          setTable(
-            Object.entries(values).reduce((d: any, [k, v]) => {
-              if (enabled[k]) {
-                d[k] = v;
+        );
+        setSubmitting(false);
+      }}
+    >
+      <Form className='w-full md:w-2/3 lg:w-1/2 m-6 p-3 bg-zinc-50' >
+        <div className='flex flex-col' >
+          {formTemplate.map((item) =>
+            <FieldBundle
+              toggleHeader={
+                ('toggleHeader' in item) ? item.toggleHeader : null
               }
-              return d;
-            }, {})
-          );
-          setSubmitting(false);
-        }}
-      >
-        <Form
-          className='w-full md:w-2/3 lg:w-1/2 m-6 p-3 bg-zinc-50'
-        >
-          <div className='flex flex-col' >
-            {formTemplate.map((item) =>
-              <FieldBundle
-                toggleHeader={
-                  ('toggleHeader' in item) ? item.toggleHeader : null
-                }
-                label={item.label}
-                type={item.type}
-                validation={item.validation}
-                key={item.label}
-              />
-            )}
-            <div className='mt-8' >
-              <button 
-                type='reset' 
-                className='float-right w-32 border border-gray-300 rounded-md 
-                  bg-white h-8 text-gray-500 hover:opacity-70'
-              >
-                Reset
-              </button>
-              <button 
-                type='submit' 
-                className='float-right mr-2 w-32 border bg-blue-500 
-                  border-blue-500 rounded-md h-8 text-white hover:opacity-90'
-              >
-                OK
-              </button>
-            </div>
+              label={item.label}
+              type={item.type}
+              validation={item.validation}
+              key={item.label}
+            />
+          )}
+          <div className='mt-8' >
+            <button 
+              type='reset' 
+              className='float-right w-32 border border-gray-300 rounded-md 
+                bg-white h-8 text-gray-500 hover:opacity-70'
+            >
+              Reset
+            </button>
+            <button 
+              type='submit' 
+              className='float-right mr-2 w-32 border bg-blue-500 
+                border-blue-500 rounded-md h-8 text-white hover:opacity-90'
+            >
+              OK
+            </button>
           </div>
-        </Form>
-      </Formik>
-      <div className='w-full md:w-2/3 lg:w-1/2' >
-        <table>
-          <tbody>
-            {Object.entries(table).map(([title, val]) => 
-              <tr>
-                <td className='border border-black w-48 font-bold p-1' >
-                  {title}
-                </td>
-                <td className='border border-black w-48 p-1' >
-                  {val}
-                </td>
-              </tr>
-            )}
-          </tbody>
-        </table>
-      </div>
+        </div>
+      </Form>
+    </Formik>
+  );
+}
+
+
+const Table = ({ ...props }: any) => {
+  return (
+    <div className='w-full md:w-2/3 lg:w-1/2' >
+      <table>
+        <tbody>
+          {Object.entries(props.table).map(([title, val]) => 
+            <tr>
+              <td className='border border-black w-48 font-bold p-1' >
+                {title as string}
+              </td>
+              <td className='border border-black w-48 p-1' >
+                {val as number}
+              </td>
+            </tr>
+          )}
+        </tbody>
+      </table>
+    </div>
+  );
+}
+
+
+function App() {
+
+  const [table, setTable] = useState<{[key: string]: number}>({});
+
+  return (
+    <div className='flex flex-col items-center' >
+      <TemplateForm setTable={setTable} />
+      <Table table={table} />
     </div>
   );
 }
