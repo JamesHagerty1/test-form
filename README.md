@@ -1,5 +1,5 @@
 ### Setup
-#### 1. [Optional] check if your node and react versions match:
+#### 1. [Optional] check if your node and react versions match / are compatible:
 ```bash
 $ npm -v
 8.19.1
