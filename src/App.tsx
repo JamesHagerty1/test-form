@@ -9,6 +9,7 @@ const TemplateForm = ({ ...props }: any) => {
   /**
    * Can update the form just by editing formTemplate items!
    * See Formik docs for 'type:' and Yup docs for 'validation:'
+   * (give a field a 'toggleHeader' to make it toggleable)
    * {
    *   label:            <string label for your field>
    *   type:             <string Formik Field type>
@@ -82,7 +83,7 @@ const TemplateForm = ({ ...props }: any) => {
     return (
       <div className='my-2' >
         {props.toggleHeader &&
-          <div>
+          <div className='font-medium' >
             <input
               type='checkbox'
               checked={enabled[props.label]}
