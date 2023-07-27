@@ -2,7 +2,7 @@
 #### 1. [Optional] check if your node and react versions match / are compatible:
 ```bash
 $ npm -v
-8.19.1
+9.8.1
 $ npm view react version
 18.2.0
 ```
