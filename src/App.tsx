@@ -8,7 +8,7 @@ function App() {
   // document me!
   /*
   {
-    
+
   }
   */
   const formTemplate = [
@@ -88,7 +88,13 @@ function App() {
         <div
           className=''
         >
-          <label className={(!enabled[props.label]) ? 'text-gray-300' : ''}>
+          <label 
+            className={
+              classnames('', {
+                'text-gray-300': (!enabled[props.label]),
+              })
+            }
+          >
             {`${props.label}:`}
           </label>
           <Field
@@ -97,7 +103,7 @@ function App() {
             disabled={!enabled[props.label]}
             className={
               classnames('float-right w-7/12 border pl-1 h-9 rounded-md', {
-                'bg-neutral-100 border-neutral-200': !enabled[props.label]
+                'bg-neutral-100 border-neutral-200': (!enabled[props.label]),
               })
             }
           />
@@ -112,7 +118,7 @@ function App() {
   };
 
   return (
-    <>
+    <div className='flex flex-col items-center' >
       <Formik
         initialValues={
           formTemplate.reduce((vals: any, item: any) => {
@@ -134,7 +140,7 @@ function App() {
         }}
       >
         <Form
-          className='max-w-2xl bg-zinc-50 p-3'
+          className='w-full md:w-2/3 lg:w-1/2 bg-zinc-50 p-3 m-6'
         >
           <div className='flex flex-col' >
             {formTemplate.map((item) =>
@@ -145,6 +151,7 @@ function App() {
                 label={item.label}
                 type={item.type}
                 validation={item.validation}
+                key={item.label}
               />
             )}
             <div className='mt-8' >
@@ -166,17 +173,19 @@ function App() {
           </div>
         </Form>
       </Formik>
-      <table>
-        <tbody>
-          {Object.entries(table).map(([title, val]) => 
-            <tr>
-              <td>{title as string}</td>
-              <td>{val as string}</td>
-            </tr>
-          )}
-        </tbody>
-      </table>
-    </>
+      <div className='w-full md:w-2/3 lg:w-1/2' >
+        <table>
+          <tbody>
+            {Object.entries(table).map(([title, val]) => 
+              <tr>
+                <td className='border border-black w-48 font-bold p-1' >{title as string}</td>
+                <td className='border border-black w-48 p-1' >{val as string}</td>
+              </tr>
+            )}
+          </tbody>
+        </table>
+      </div>
+    </div>
   );
 }
 
