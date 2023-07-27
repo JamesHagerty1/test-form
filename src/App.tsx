@@ -142,9 +142,21 @@ function App() {
                 validation={item.validation}
               />
             )}
-            <div>
-              <button type='submit' className='float-right'>OK</button>
-              <button type='reset' className='float-right'>Reset</button>
+            <div className='mt-8' >
+              <button 
+                type='reset' 
+                className='float-right w-32 border border-gray-300 rounded-md 
+                  bg-white h-8 text-gray-500 hover:opacity-70'
+              >
+                Reset
+              </button>
+              <button 
+                type='submit' 
+                className='float-right mr-2 w-32 border bg-blue-500 
+                  border-blue-500 rounded-md h-8 text-white hover:opacity-90'
+              >
+                OK
+              </button>
             </div>
           </div>
         </Form>
